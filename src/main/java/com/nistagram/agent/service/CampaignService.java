@@ -52,4 +52,27 @@ public class CampaignService {
         throw new Exception("Error saving campaign");
     }
 
+    public List<Campaign> getAgentsCampaign() {
+        String username = userService.getUsername();
+        List<Campaign> campaigns = campaignRepository.findByAgentUsername(username);
+        return campaigns;
+    }
+
+    public Boolean deleteCampaign(Long id) {
+        campaignRepository.deleteById(id);
+        return true;
+    }
+
+    private int getDiffYears(Date first, Date last) {
+        Calendar a = Calendar.getInstance();
+        a.setTime(first);
+        Calendar b = Calendar.getInstance();
+        b.setTime(last);
+        int diff = b.get(Calendar.YEAR) - a.get(Calendar.YEAR);
+        if (a.get(Calendar.MONTH) > b.get(Calendar.MONTH) ||
+                (a.get(Calendar.MONTH) == b.get(Calendar.MONTH) && a.get(Calendar.DATE) > b.get(Calendar.DATE))) {
+            diff--;
+        }
+        return diff;
+    }
 }

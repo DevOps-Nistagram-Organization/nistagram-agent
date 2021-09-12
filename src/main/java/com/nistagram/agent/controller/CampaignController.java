@@ -29,4 +29,17 @@ public class CampaignController {
         CampaignDTO dto = CampaignConverter.toDTO(campaign);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
+
+    @GetMapping(value = "getAgent")
+    public ResponseEntity<List<CampaignDTO>> getAgentsCampaign() {
+        List<Campaign> campaigns = campaignService.getAgentsCampaign();
+        List<CampaignDTO> dto = campaigns.stream().map(CampaignConverter::toDTO).collect(Collectors.toList());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "delete/{id}")
+    public ResponseEntity<Boolean> deleteCampaign(@PathVariable("id") Long id) {
+        Boolean status = campaignService.deleteCampaign(id);
+        return new ResponseEntity<>(status, HttpStatus.OK);
+    }
 }
