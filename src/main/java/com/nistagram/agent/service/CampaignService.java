@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CampaignService {
@@ -35,7 +36,7 @@ public class CampaignService {
 
         CreatePostDTO createPostDTO = new CreatePostDTO(createCampaignDTO.getImageUrl(), new ArrayList<>());
         ResponseEntity<PostDTO> postDTO = postClient.createPost(createPostDTO, userService.getTokenString());
-        if(postDTO.getStatusCode().equals(HttpStatus.OK)) {
+        if (postDTO.getStatusCode().equals(HttpStatus.OK)) {
             PostDTO post = postDTO.getBody();
             String username = userService.getUsername();
             Criteria criteria = criteriaRepository.save(createCampaignDTO.getCriteria());
@@ -50,6 +51,17 @@ public class CampaignService {
             return campaignRepository.save(campaign);
         }
         throw new Exception("Error saving campaign");
+    }
+
+    public List<Campaign> getCampaignsForUser() {
+        String username = userService.getUsername();
+        UserInfoDTO userInfoDTO = userService.getUserInfo(username);
+        int years = getDiffYears(userInfoDTO.getDateOfBirth(), new Date());
+        String interval = getCurrentInterval();
+        List<Campaign> campaigns = campaignRepository.findAllCriteria(userInfoDTO.getGender(), "Both", years);
+        campaigns = campaigns.stream().filter(campaign -> campaign.getIntervals().contains(interval)).collect(Collectors.toList());
+        campaigns = campaigns.stream().limit(3).collect(Collectors.toList());
+        return campaigns;
     }
 
     public List<Campaign> getAgentsCampaign() {
@@ -74,5 +86,16 @@ public class CampaignService {
             diff--;
         }
         return diff;
+    }
+
+    private String getCurrentInterval() {
+        Date date = new Date();
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(date);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        if (hour < 10) {
+            return "INTERVAL0" + hour;
+        }
+        return "INTERVAL" + hour;
     }
 }
