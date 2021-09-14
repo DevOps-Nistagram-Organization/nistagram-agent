@@ -1,0 +1,29 @@
+package com.nistagram.agent.model.entity;
+
+public enum DateInterval {
+
+    INTERVAL00,
+    INTERVAL01,
+    INTERVAL02,
+    INTERVAL03,
+    INTERVAL04,
+    INTERVAL05,
+    INTERVAL06,
+    INTERVAL07,
+    INTERVAL08,
+    INTERVAL09,
+    INTERVAL10,
+    INTERVAL11,
+    INTERVAL12,
+    INTERVAL13,
+    INTERVAL14,
+    INTERVAL15,
+    INTERVAL16,
+    INTERVAL17,
+    INTERVAL18,
+    INTERVAL19,
+    INTERVAL20,
+    INTERVAL21,
+    INTERVAL22,
+    INTERVAL23,
+}
