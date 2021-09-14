@@ -33,7 +33,7 @@ public class CampaignService {
     }
 
     public Campaign createCampaign(@RequestBody CreateCampaignDTO createCampaignDTO) throws Exception {
-
+        isApproved();
         CreatePostDTO createPostDTO = new CreatePostDTO(createCampaignDTO.getImageUrl(), new ArrayList<>());
         ResponseEntity<PostDTO> postDTO = postClient.createPost(createPostDTO, userService.getTokenString());
         if (postDTO.getStatusCode().equals(HttpStatus.OK)) {
@@ -70,7 +70,8 @@ public class CampaignService {
         return campaigns;
     }
 
-    public Boolean deleteCampaign(Long id) {
+    public Boolean deleteCampaign(Long id) throws Exception {
+        isApproved();
         campaignRepository.deleteById(id);
         return true;
     }
@@ -97,5 +98,13 @@ public class CampaignService {
             return "INTERVAL0" + hour;
         }
         return "INTERVAL" + hour;
+    }
+
+    private boolean isApproved() throws Exception {
+        UserInfoDTO userInfoDTO = userService.getUserInfo(userService.getUsername());
+        if(userInfoDTO.getApprovedAgent()) {
+            return true;
+        }
+        throw new Exception("You are not approved");
     }
 }
