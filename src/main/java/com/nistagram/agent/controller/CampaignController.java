@@ -8,6 +8,7 @@ import com.nistagram.agent.service.CampaignService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class CampaignController {
     }
 
     @PostMapping(value = "create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('AGENT')")
     public ResponseEntity<CampaignDTO> createCampaign(@RequestBody CreateCampaignDTO createCampaignDTO) throws Exception {
         Campaign campaign = campaignService.createCampaign(createCampaignDTO);
         CampaignDTO dto = CampaignConverter.toDTO(campaign);
@@ -31,6 +33,7 @@ public class CampaignController {
     }
 
     @GetMapping(value = "getAgent")
+    @PreAuthorize("hasAuthority('AGENT')")
     public ResponseEntity<List<CampaignDTO>> getAgentsCampaign() {
         List<Campaign> campaigns = campaignService.getAgentsCampaign();
         List<CampaignDTO> dto = campaigns.stream().map(CampaignConverter::toDTO).collect(Collectors.toList());
@@ -45,7 +48,8 @@ public class CampaignController {
     }
 
     @DeleteMapping(value = "delete/{id}")
-    public ResponseEntity<Boolean> deleteCampaign(@PathVariable("id") Long id) {
+    @PreAuthorize("hasAuthority('AGENT')")
+    public ResponseEntity<Boolean> deleteCampaign(@PathVariable("id") Long id) throws Exception {
         Boolean status = campaignService.deleteCampaign(id);
         return new ResponseEntity<>(status, HttpStatus.OK);
     }
