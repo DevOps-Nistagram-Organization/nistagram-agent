@@ -1,6 +1,8 @@
 package com.nistagram.agent.service;
 
 import com.nistagram.agent.client.PostClient;
+import com.nistagram.agent.exception.CampaignException;
+import com.nistagram.agent.exception.NotApprovedException;
 import com.nistagram.agent.model.dto.CreateCampaignDTO;
 import com.nistagram.agent.model.dto.CreatePostDTO;
 import com.nistagram.agent.model.dto.PostDTO;
@@ -32,7 +34,7 @@ public class CampaignService {
         this.criteriaRepository = criteriaRepository;
     }
 
-    public Campaign createCampaign(@RequestBody CreateCampaignDTO createCampaignDTO) throws Exception {
+    public Campaign createCampaign(@RequestBody CreateCampaignDTO createCampaignDTO) throws CampaignException, NotApprovedException {
         isApproved();
         CreatePostDTO createPostDTO = new CreatePostDTO(createCampaignDTO.getImageUrl(), new ArrayList<>());
         ResponseEntity<PostDTO> postDTO = postClient.createPost(createPostDTO, userService.getTokenString());
@@ -50,7 +52,7 @@ public class CampaignService {
                     createCampaignDTO.getEndDate(), criteria, new HashSet<>(createCampaignDTO.getIntervals()));
             return campaignRepository.save(campaign);
         }
-        throw new Exception("Error saving campaign");
+        throw new CampaignException("Error saving campaign");
     }
 
     public List<Campaign> getCampaignsForUser() {
@@ -100,11 +102,11 @@ public class CampaignService {
         return "INTERVAL" + hour;
     }
 
-    private boolean isApproved() throws Exception {
+    private boolean isApproved() throws NotApprovedException {
         UserInfoDTO userInfoDTO = userService.getUserInfo(userService.getUsername());
         if(userInfoDTO.getApprovedAgent()) {
             return true;
         }
-        throw new Exception("You are not approved");
+        throw new NotApprovedException("You are not approved");
     }
 }
