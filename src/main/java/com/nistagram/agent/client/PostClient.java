@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(url = "${api.postService}", name = "PostService")
+// app.post.url from application.properties
+@FeignClient(name = "post", url = "${app.post.url}")
 public interface PostClient {
-    @PostMapping(value = "create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "post/create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<PostDTO> createPost(@RequestBody CreatePostDTO dto, @RequestHeader("Authorization") String bearerToken);
 }
